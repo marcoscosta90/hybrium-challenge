@@ -1,5 +1,5 @@
-  
-const { Model, DataTypes } = require('sequelize');
+  const { Model, DataTypes } = require('sequelize');
+  const bcrypt = require('bcryptjs')
 
 
 class User extends Model {
@@ -13,9 +13,19 @@ class User extends Model {
             occupation: DataTypes.STRING,
             workstarts: DataTypes.INTEGER,
             workends: DataTypes.INTEGER,
-            lunchstarts: DataTypes.INTEGER,
-            lunchends: DataTypes.INTEGER,          
-        }, { sequelize })
-    }
+            lunchstarts: DataTypes.INTEGER,            
+            lunchends: DataTypes.INTEGER,  
+            islogged: DataTypes.BOOLEAN         
+        }, 
+        {
+            sequelize,
+            hooks: {
+                beforeCreate: (user) => {
+                    const salt = bcrypt.genSaltSync();
+                    user.password = bcrypt.hashSync(user.password, salt);
+                },     
+            },
+        })  
+    }     
 }
 module.exports = User;

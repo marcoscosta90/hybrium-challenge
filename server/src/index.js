@@ -12,11 +12,6 @@ app.use(routes);
 
 app.listen(3333);
 
-
-
-
-
-
 /* const nodemailer = require('nodemailer')
 const SMTP_CONFIG = require('./config/smtp')
 
