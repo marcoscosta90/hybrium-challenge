@@ -21,5 +21,3 @@ router.post('/users/login', UserController.login);
 
 
 
-
-module.exports = router;
