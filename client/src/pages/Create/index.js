@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core'
 import React from 'react'
-import EmployeesList from '../../components/EmployeesList'
+import CreateUser from '../../components/CreateUser'
 import Navbar from '../../components/Navbar'
 import Sidebar from '../../components/Sidebar'
 
@@ -13,11 +13,11 @@ const useStyles = makeStyles((theme) => ({
         height: 100
     },
     main: {
-        display: 'flex',        
+        display: 'flex',
         marginTop: 10,
-    }, 
+    },
     createuser: {
-        marginLeft: 300
+        marginLeft: 320
     }
 }))
 
@@ -27,14 +27,14 @@ function Home() {
     return (
         <div className={classes.root}>
             <div className={classes.navbar}>
-            <Navbar />
+                <Navbar />
             </div>
             <main className={classes.main}>
                 <div>
-                <Sidebar />
+                    <Sidebar />
                 </div>
                 <div className={classes.createuser}>
-                    <EmployeesList />
+                    <CreateUser />
                 </div>
             </main>
         </div>

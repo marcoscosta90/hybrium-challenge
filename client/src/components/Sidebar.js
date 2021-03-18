@@ -4,7 +4,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import Home from '../pages/Home';
+import { Box } from '@material-ui/core';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,17 +45,25 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Sidebar() {
   const classes = useStyles();
-  const navigate = useNavigate();
+  
 
   return (             
             <div className={classes.root}>
               <ListItemIcon  className={classes.item}>
+                <Link to="/home">
+                <Box>
                    <MenuIcon  cursor='pointer' className={classes.image} color="primary" fontSize="large"
-                    onClick={() => navigate('/')}></MenuIcon>
-                   <ListItemText  className={classes.spacingItem}> Listagem dos colaboradores </ListItemText>                   
+                   ></MenuIcon>
+                </Box>
+                </Link>
+                   <Link to='/home' style={{textDecoration: 'none', color: '#4F4F4F'}}><ListItemText  className={classes.spacingItem}> Listagem dos colaboradores </ListItemText> </Link>                  
                     <div className={classes.divider} />
+                 <Link to="/createuser">
+                  <Box>
                    <PersonAddIcon cursor='pointer' className={classes.image} color="primary" fontSize="large"/>
-                   <ListItemText cursor='pointer' className={classes.spacingItem}> Adicionar um colaborador </ListItemText>               
+                   </Box>
+                   </Link>
+                   <Link to="/createuser" style={{textDecoration: 'none', color: '#4F4F4F'}}><ListItemText cursor='pointer' className={classes.spacingItem}> Adicionar um colaborador </ListItemText>    </Link>           
               </ListItemIcon> 
          
             </div>   

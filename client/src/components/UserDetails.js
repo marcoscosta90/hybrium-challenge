@@ -3,8 +3,8 @@ import { Avatar, Box, Button, Card, CardActions, CardContent, Container, Divider
 import { red } from "@material-ui/core/colors";
 import { Form } from "@unform/web";
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
-import { spacing } from '@material-ui/system';
 import axios from 'axios';
+import { useEffect, useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
     box: {
@@ -41,11 +41,20 @@ const useStyles = makeStyles((theme) => ({
 
 function UserDetails() {
 
-    const classes = useStyles();
+    const classes = useStyles(); 
+    
+    const [users, setUsers] = useState([]);
 
-    const handleSubmit = (data) => {
-        axios.post('http://localhost:3004/employees', data).then(res => window.location = '/').catch(err => console.log(err));
-    };
+    useEffect(() => {
+        axios.get('http://localhost:3333/users')
+            .then((response) => {
+                setUsers(response.data.users)      
+                console.log(response.data.users)          
+            })
+            .catch((error) => {
+                console.log('Error')
+            })
+    },[]);
 
     const ColorButton = withStyles((theme) => ({
         root: {
@@ -104,9 +113,11 @@ function UserDetails() {
 
 
     return (
+       
         <Container className={classes.root}>
+             {users.map((user) =>
             <Box className={classes.box}>
-                <Form onSubmit={handleSubmit}>
+            
                     <Box display="flex" className={classes.header}>
                         <Box flexGrow={0.9}>
                             <Typography variant="h5">
@@ -134,6 +145,8 @@ function UserDetails() {
                         </Box>
                     </Box>
                     <Divider className={classes.divider} />
+                    <Form >
+                    
                     <Box display="flex">
                         <Card className={classes.card}>
                             <CardContent style={{ marginLeft: '15px' }}>
@@ -160,7 +173,7 @@ function UserDetails() {
                                             CPF
                                     </Typography>
                                         <Typography variant="subtitle1"  >
-                                            455.111.555-33
+                                            {user.emai}
                                     </Typography>
                                     </Box>
                                     <Box>
@@ -301,9 +314,13 @@ function UserDetails() {
                             
                         </Box>
                     </Box>
+                  
                 </Form>
+            
             </Box>
+             )}
         </Container>
+       
     )
 }
 ;

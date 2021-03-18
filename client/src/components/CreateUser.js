@@ -1,17 +1,21 @@
 
 import { Avatar, Box, Button, Card, CardActions, CardContent, Container, Divider, makeStyles, TextField, Typography, withStyles } from "@material-ui/core";
 import { red } from "@material-ui/core/colors";
-import { Form } from "@unform/web";
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
-import { spacing } from '@material-ui/system';
-import axios from 'axios';
+import axios from "axios";
+import Axios from 'axios';
+import { useEffect, useState } from "react";
 
-const useStyles = makeStyles((theme) => ({
+
+const useStyles = makeStyles((theme) => ({   
     root: {
-
+        display: 'flex',
+        width: '100%',
+        position: 'fixed'
     },
     box: {
-        paddingTop: 30
+        paddingTop: 30,
+        width: 1500
     },
     button: {
         borderRadius: 20,
@@ -21,24 +25,25 @@ const useStyles = makeStyles((theme) => ({
     },
     divider: {
         borderBottom: '2px solid #888888',
-        width: '95%',
+        width: '100%',
         marginBottom: '20px',
         marginTop: '20px'
-    },
-    card: {
-        maxWidth: 500
-    },
+    },   
     title: {
         marginLeft: '10px',
     },
+    card: {
+        width: 600
+    }
 
 }))
 
 
 function CreateUser() {
+   
 
     const classes = useStyles();
-  
+
     const ColorButton = withStyles((theme) => ({
         root: {
             color: theme.palette.getContrastText(red[900]),
@@ -47,39 +52,77 @@ function CreateUser() {
                 backgroundColor: red[500],
             },
         },
-    }))(Button);
+    }))(Button);    
 
-    return (
+    const [data, setData] = useState({
+        name: "",
+        cpf: "",
+        email: "",
+        phone: "",
+        occupation: "",
+        workstarts: "",
+        workends: "",
+        lunchstarts: "",
+        lunchends: ""
+    })
 
-        <Container className={classes.root}>
+    function submit(e) {
+        e.preventDefault();
+        Axios.post('http://localhost:3333/users/', {
+            name: data.name,
+            cpf: data.cpf,
+            email: data.email,
+            phone: parseInt(data.phone),
+            occupation: data.occupation, 
+            workstarts: parseInt(data.workstarts),
+            workends: parseInt(data.workends),
+            lunchstarts: parseInt(data.lunchstarts),
+            lunchends: parseInt(data.lunchends)
+        })
+        .then(res => {
+            console.log(res.data)
+            
+        })
+        .catch(error => console.log(error));
+    }
+
+    function handle(e) {
+        const newdata = { ...data }
+        newdata[e.target.id] = e.target.value
+        setData(newdata)       
+    }
+
+    return (       
+        <Box p={1} className={classes.root}>
             <Box className={classes.box}>
-                <Form>
-                    <Box display="flex" className={classes.header}>
-                        <Box flexGrow={0.9}>
-                            <Typography variant="h5">
-                                Adicionar colaborador
+            <form onSubmit={(e) => submit(e)}>
+                <Box display="flex" className={classes.header}>
+                    <Box flexGrow={0.9}>
+                        <Typography variant="h5">
+                            Adicionar colaborador
                         </Typography>
-                        </Box>
-
-                        <Box display="flex">
-                            <ColorButton
-                                variant="outlined"
-                                color="secondary"
-                                type="button"
-                                className={classes.button}
-                                onClick={() => {
-                                    window.location = "/";
-                                }}>Cancelar</ColorButton>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                className={classes.button}
-                            >
-                                Salvar
-                        </Button>
-                        </Box>
                     </Box>
+
+                    <Box display="flex">
+                        <ColorButton
+                            variant="outlined"
+                            color="secondary"
+                            type="button"
+                            className={classes.button}
+                            onClick={() => {
+                                window.location = "/";
+                            }}>Cancelar</ColorButton>                            
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.button}
+                        >
+                            Salvar
+                        </Button>
+                    </Box>
+                </Box>
+                            
                     <Divider className={classes.divider} />
                     <Card className={classes.card}>
                         <CardContent>
@@ -87,22 +130,28 @@ function CreateUser() {
                                 <Avatar >
                                     <CameraAltIcon />
                                 </Avatar>
-                                <TextField id="standard-basic" label="Nome do colaborador" className={classes.title} />
+                                <TextField
+                                    id="name"
+                                    value={data.name}
+                                    label="Nome do colaborador"
+                                    className={classes.title}
+                                    onChange={(e) => handle(e)}
+                                />
                             </Box>
                             <Box mb={4} >
-                            <Typography variant="h6" component="h2">
-                                        Informações
+                                <Typography variant="h6" component="h2">
+                                    Informações
                                     </Typography>
                             </Box>
 
-                           
-                           
+
+
                             <Box display="flex" mb={3}>
                                 <Box mr={5}>
                                     <Typography variant="h6" component="h2">
                                         CPF
                                     </Typography>
-                                    <TextField id="standard-basic" label="Digite o cpf" size="small" />
+                                    <TextField id="cpf" value={data.cpf} label="Digite o cpf" size="small" onChange={(e) => handle(e)} />
                                 </Box>
                                 <Box>
                                     <Typography variant="h6" >
@@ -110,9 +159,12 @@ function CreateUser() {
                                     </Typography>
                                     <TextField
                                         style={{ width: 250 }}
-                                        id="standard-basic"
+                                        id="email"
+                                        value={data.email}
                                         label="Digite o email do colaborador"
-                                        size="small" />
+                                        size="small"
+                                        onChange={(e) => handle(e)}
+                                    />
                                 </Box>
                             </Box>
                             <Box mb={3}>
@@ -121,9 +173,12 @@ function CreateUser() {
                                         Telefone
                                     </Typography>
                                     <TextField
-                                        id="standard-basic"
+                                        id="phone"
+                                        value={data.phone}
                                         label="(xx) xxxx-xxxx"
-                                        size="small" />
+                                        size="small"
+                                        onChange={(e) => handle(e)}
+                                    />
                                 </Box>
                             </Box>
                             <Box mb={3}>
@@ -133,9 +188,12 @@ function CreateUser() {
                                     </Typography>
                                     <TextField
                                         style={{ width: 250 }}
-                                        id="standard-basic"
+                                        id="occupation"
+                                        value={data.occupation}
                                         label="Ocupação do colaborador?"
-                                        size="small" />
+                                        size="small"
+                                        onChange={(e) => handle(e)}
+                                    />
                                 </Box>
                             </Box>
                             <Box display="flex" mr={5} mb={3}>
@@ -146,15 +204,21 @@ function CreateUser() {
                                     <Box display="flex" >
                                         <Box mr={5}>
                                             <TextField
-                                                id="standard-basic"
+                                                id="workstarts"
+                                                value={data.workstarts}
                                                 label="Horário de entrada"
-                                                size="small" />
+                                                size="small"
+                                                onChange={(e) => handle(e)}
+                                            />
                                         </Box>
                                         <Box>
                                             <TextField
-                                                id="standard-basic"
+                                                id="workends"
+                                                value={data.workends}
                                                 label="Horário de saida"
-                                                size="small" />
+                                                size="small"
+                                                onChange={(e) => handle(e)}
+                                            />
                                         </Box>
                                     </Box>
                                 </Box>
@@ -167,28 +231,32 @@ function CreateUser() {
                                     <Box display="flex" >
                                         <Box mr={5}>
                                             <TextField
-                                                id="standard-basic"
+                                                id="lunchstarts"
+                                                value={data.lunchstarts}
                                                 label="Horário de entrada"
-                                                size="small" />
+                                                size="small"
+                                                onChange={(e) => handle(e)}
+                                            />
                                         </Box>
                                         <Box>
                                             <TextField
-                                                id="standard-basic"
+                                                id="lunchends"
+                                                value={data.lunchends}
                                                 label="Horário de saida"
-                                                size="small" />
+                                                size="small"
+                                                onChange={(e) => handle(e)}
+                                            />
                                         </Box>
                                     </Box>
                                 </Box>
                             </Box>
                             <Box className={classes.wrapperBox}>
-           
-           
-            </Box>
+                            </Box>
                         </CardContent>
                     </Card>
-                </Form>
+                </form>
             </Box>
-        </Container>
+        </Box>
     )
 }
 ;

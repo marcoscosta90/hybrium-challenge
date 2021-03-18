@@ -1,28 +1,29 @@
-import { Avatar, Box, Card, CardContent, Container, Divider, FormControl, IconButton, Input, InputLabel, MenuItem, NativeSelect, Paper, Select, TextField, Typography } from '@material-ui/core'
-import { makeStyles, withStyles } from '@material-ui/core/styles'
+import { Avatar, Box, Card, CardContent, Container, Divider, FormControl, IconButton, MenuItem, Paper, Select, TextField, Typography } from '@material-ui/core'
+import { makeStyles} from '@material-ui/core/styles'
+import axios from 'axios'
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme) => ({
-    
+
     body: {
         display: 'flex',
         flexDirection: 'column',
         width: '90%',        
-        marginLeft: '300px',
         position: 'fixed'
     },
-    cardMain: {        
+    cardMain: {
         maxWidth: '500px',
-        display: 'flex',   
-        margin: theme.spacing(2)            
+        display: 'flex',
+        margin: theme.spacing(2)
     },
     card: {
         display: 'flex',
-        alignItems: 'center',   
-                      
+        alignItems: 'center',
+
     },
     formControl: {
         margin: theme.spacing(1),
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     },
     divider: {
         borderBottom: '2px solid #888888',
-        width: '80%',
+        width: '77%',
         marginBottom: '20px',
         marginTop: '20px'
     },
@@ -53,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     wrapperBox: {
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 40%)',
-         
+
     },
 
     label: {
@@ -65,44 +66,25 @@ const useStyles = makeStyles((theme) => ({
 function EmployeesList() {
     const classes = useStyles();
     const [input, setInput] = useState('Marcos');
+    const [users, setUsers] = useState([]);
 
     const handleChange = (event) => {
         setInput(event.target.value);
     };
 
-    const employees = [
-        {
-            'avatar': 'https://avatars.githubusercontent.com/u/50223741?s=460&u=b33c0084a1d22d2782eff4cc2cab6a36ad5f2877&v=4',
-            'nome': 'Marcos Costa'
-        },
-        {
-            'avatar': 'https://avatars.githubusercontent.com/u/50223741?s=460&u=b33c0084a1d22d2782eff4cc2cab6a36ad5f2877&v=4',
-            'nome': 'Geranio Costa'
-        },
-        {
-            'avatar': 'https://avatars.githubusercontent.com/u/50223741?s=460&u=b33c0084a1d22d2782eff4cc2cab6a36ad5f2877&v=4',
-            'nome': 'Alfredo Costa'
-        },
-        {
-            'avatar': 'https://avatars.githubusercontent.com/u/50223741?s=460&u=b33c0084a1d22d2782eff4cc2cab6a36ad5f2877&v=4',
-            'nome': 'Marcos Costa'
-        },
-        {
-            'avatar': 'https://avatars.githubusercontent.com/u/50223741?s=460&u=b33c0084a1d22d2782eff4cc2cab6a36ad5f2877&v=4',
-            'nome': 'Geranio Costa'
-        },
-        {
-            'avatar': 'https://avatars.githubusercontent.com/u/50223741?s=460&u=b33c0084a1d22d2782eff4cc2cab6a36ad5f2877&v=4',
-            'nome': 'Alfredo Costa'
-        },
-
-    ]
-
+    useEffect(() => {
+        axios.get('http://localhost:3333/users')
+            .then((response) => {
+                setUsers(response.data.users)                
+            })
+            .catch((error) => {
+                console.log('Error')
+            })
+    },[]);
 
 
     return (
-       
-        <Box className={classes.body}>
+        <Box p={4} className={classes.body}>
             <Typography variant="h5" >Listagem de colaboradores</Typography>
             <Divider className={classes.divider} />
             <Box className={classes.inputBox}>
@@ -115,8 +97,8 @@ function EmployeesList() {
                         defaultValue="Nome do colaborador"
                     >
                         <MenuItem value={10}>Nome do colaborador</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
+                        <MenuItem value={20}>Idade</MenuItem>
+                        <MenuItem value={30}>email</MenuItem>
                     </Select>
                     <Paper className={classes.input}>
                         <InputBase
@@ -132,20 +114,23 @@ function EmployeesList() {
                 </FormControl>
             </Box>
             <Box className={classes.wrapperBox}>
-            {employees.map(employee => 
-             <Card className={classes.cardMain}>
-                <CardContent className={classes.card}>
-                    <Avatar className={classes.avatar} color="textSecondary" gutterBottom>
-                        {employee.avatar}
-                    </Avatar>
-                    <Typography variant="h5" component="h2">
-                        {employee.nome}
-                    </Typography>                   
-                </CardContent>
-            </Card>)}
+           
+            {users.map((user) =>
+                <Link to={"/userdetails/"+user.id} style={{textDecoration: 'none'}}>
+                    <Card className={classes.cardMain}>                   
+                        <CardContent className={classes.card}>
+                            <Avatar className={classes.avatar} color="textSecondary" gutterBottom />                            
+                            <Typography variant="h5" component="h2">
+                                {user.name}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                 </Link>
+                )}
+                
             </Box>
         </Box>
-       
+
     )
 }
 
