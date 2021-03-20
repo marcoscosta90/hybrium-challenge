@@ -5,6 +5,7 @@ import { Form } from "@unform/web";
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
 import axios from 'axios';
 import { useEffect, useState } from "react";
+import { useParams } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
     box: {
@@ -40,21 +41,24 @@ const useStyles = makeStyles((theme) => ({
 
 
 function UserDetails() {
-
+    const { id } = useParams();
     const classes = useStyles(); 
     
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:3333/users')
-            .then((response) => {
-                setUsers(response.data.users)      
-                console.log(response.data.users)          
+        fetch(`http://localhost:3333/users/${id}`)
+            .then(response => {
+                response.json().then(user => {
+                    setUsers(user)
+                    console.log(user)   
+                })
+                      
             })
             .catch((error) => {
                 console.log('Error')
             })
-    },[]);
+    },[id]);
 
     const ColorButton = withStyles((theme) => ({
         root: {
@@ -115,9 +119,9 @@ function UserDetails() {
     return (
        
         <Container className={classes.root}>
-             {users.map((user) =>
-            <Box className={classes.box}>
             
+            <Box className={classes.box}>
+
                     <Box display="flex" className={classes.header}>
                         <Box flexGrow={0.9}>
                             <Typography variant="h5">
@@ -172,8 +176,8 @@ function UserDetails() {
                                         <Typography variant="h6" component="h2">
                                             CPF
                                     </Typography>
-                                        <Typography variant="subtitle1"  >
-                                            {user.emai}
+                                        <Typography variant="subtitle1">      
+                                        {}                                      
                                     </Typography>
                                     </Box>
                                     <Box>
@@ -318,7 +322,7 @@ function UserDetails() {
                 </Form>
             
             </Box>
-             )}
+             
         </Container>
        
     )
