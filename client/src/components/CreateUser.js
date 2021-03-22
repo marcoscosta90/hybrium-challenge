@@ -5,6 +5,7 @@ import CameraAltIcon from '@material-ui/icons/CameraAlt';
 import axios from "axios";
 import Axios from 'axios';
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router";
 
 
 const useStyles = makeStyles((theme) => ({   
@@ -39,9 +40,8 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 
-function CreateUser() {
-   
-
+function CreateUser({id}) {
+    const history = useHistory();
     const classes = useStyles();
 
     const ColorButton = withStyles((theme) => ({
@@ -64,11 +64,26 @@ function CreateUser() {
         workends: "",
         lunchstarts: "",
         lunchends: ""
-    })
+    });
+
+
+    useEffect(()=> {
+        if(id) {
+            axios.get(`http://localhost:3333/users/${id}`)
+            .then((response) => {                
+                setData(response.data.user)
+            })
+        }
+    },[])
 
     function submit(e) {
         e.preventDefault();
-        Axios.post('http://localhost:3333/users/', {
+
+        const method = id ? 'put' : 'post';
+        const url = id
+        ? `http://localhost:3333/users/${id}`
+        : 'http://localhost:3333/users'
+        Axios[method](url, {
             name: data.name,
             cpf: data.cpf,
             email: data.email,
@@ -80,7 +95,7 @@ function CreateUser() {
             lunchends: parseInt(data.lunchends)
         })
         .then(res => {
-            console.log(res.data)
+            history.push('/home')
             
         })
         .catch(error => console.log(error));

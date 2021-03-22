@@ -5,7 +5,7 @@ import { Form } from "@unform/web";
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
 import axios from 'axios';
 import { useEffect, useState } from "react";
-import { useParams } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
     box: {
@@ -40,25 +40,38 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 
-function UserDetails() {
+const UserDetails =() => {
+    const history = useHistory();
     const { id } = useParams();
-    const classes = useStyles(); 
-    
+    const classes = useStyles();
+
     const [users, setUsers] = useState([]);
 
+    function handleInactive() {
+        axios.delete(`http://localhost:3333/users/${id}`).then(res => {
+            history.push('/home')
+        }).catch(() => {
+            console.error('erro')
+        })
+    }
+
     useEffect(() => {
-        fetch(`http://localhost:3333/users/${id}`)
-            .then(response => {
-                response.json().then(user => {
-                    setUsers(user)
-                    console.log(user)   
-                })
-                      
-            })
+        axios.get(`http://localhost:3333/users/${id}`).then(res => {
+            setUsers(res.data.user)
+            
+        })
+            /*fetch(`http://localhost:3333/users/${id}`)
+                .then(response => {
+                    response.json().then(user => {
+                        setUsers(user)
+                        console.log(user)   
+                    })
+                          
+                })*/
             .catch((error) => {
                 console.log('Error')
             })
-    },[id]);
+    }, [id]);
 
     const ColorButton = withStyles((theme) => ({
         root: {
@@ -68,7 +81,7 @@ function UserDetails() {
                 backgroundColor: red[500],
             },
         },
-    }))(Button);  
+    }))(Button);
 
 
     const cardDetails = [
@@ -113,31 +126,30 @@ function UserDetails() {
             'lunchEnds': '11:00',
         },
     ]
-        
+
 
 
     return (
-       
+
         <Container className={classes.root}>
-            
+
             <Box className={classes.box}>
 
-                    <Box display="flex" className={classes.header}>
-                        <Box flexGrow={0.9}>
-                            <Typography variant="h5">
-                                Detalhes do colaborador
+                <Box display="flex" className={classes.header}>
+                    <Box flexGrow={0.9}>
+                        <Typography variant="h5">
+                            Detalhes do colaborador
                         </Typography>
-                        </Box>
+                    </Box>
 
-                        <Box display="flex">
-                            <ColorButton
-                                variant="outlined"
-                                color="secondary"
-                                type="button"
-                                className={classes.button}
-                                onClick={() => {
-                                    window.location = "/";
-                                }}>Inativar colaborador</ColorButton>
+                    <Box display="flex">
+                        <ColorButton
+                            variant="outlined"
+                            color="secondary"
+                            type="button"
+                            className={classes.button}
+                            onClick={handleInactive}>Inativar colaborador</ColorButton>
+                        <Link to={`/edit/${users.id}`}>
                             <Button
                                 type="submit"
                                 variant="contained"
@@ -146,11 +158,12 @@ function UserDetails() {
                             >
                                 Editar colaborador
                         </Button>
-                        </Box>
+                        </Link>
                     </Box>
-                    <Divider className={classes.divider} />
-                    <Form >
-                    
+                </Box>
+                <Divider className={classes.divider} />
+                <Form >
+
                     <Box display="flex">
                         <Card className={classes.card}>
                             <CardContent style={{ marginLeft: '15px' }}>
@@ -161,8 +174,8 @@ function UserDetails() {
                                         </Avatar>
                                     </Box>
                                     <Box>
-                                        <Typography variant="h6">Nome do colaborador</Typography>
-                                        <Typography variant="subtitle2">Cadastrado em 28/12/2020</Typography>
+                                        <Typography variant="h6">{users.name}</Typography>
+                                        <Typography variant="subtitle2">Cadastrado em {users.createdAt}</Typography>
                                     </Box>
                                 </Box>
                                 <Box mb={4} >
@@ -176,17 +189,17 @@ function UserDetails() {
                                         <Typography variant="h6" component="h2">
                                             CPF
                                     </Typography>
-                                        <Typography variant="subtitle1">      
-                                        {}                                      
-                                    </Typography>
+                                        <Typography variant="subtitle1">
+                                            {users.cpf}
+                                        </Typography>
                                     </Box>
                                     <Box>
                                         <Typography variant="h6" >
                                             Telefone
                                     </Typography>
                                         <Typography variant="subtitle1"  >
-                                            19 99190-0101
-                                    </Typography>
+                                            {users.phone}
+                                        </Typography>
                                     </Box>
                                 </Box>
                                 <Box mb={6}>
@@ -195,8 +208,8 @@ function UserDetails() {
                                             E-mail
                                     </Typography>
                                         <Typography variant="subtitle1" >
-                                            email@colaborador.com.br
-                                    </Typography>
+                                            {users.email}
+                                        </Typography>
                                     </Box>
                                 </Box>
                                 <Box display="flex" mb={3} >
@@ -205,8 +218,8 @@ function UserDetails() {
                                             Ocupação
                                     </Typography>
                                         <Typography variant="subtitle1" >
-                                            Assistente de rh
-                                    </Typography>
+                                            {users.occupation}
+                                        </Typography>
                                     </Box>
 
                                     <Box>
@@ -214,8 +227,8 @@ function UserDetails() {
                                             Horário de expediente
                                     </Typography>
                                         <Typography variant="subtitle1" >
-                                            8:30 às 17:30
-                                    </Typography>
+                                            {users.workstarts} às {users.workends}
+                                        </Typography>
                                     </Box>
                                 </Box>
                                 <Box display="flex" mr={5} mb={3}>
@@ -226,8 +239,8 @@ function UserDetails() {
                                         <Box display="flex" >
                                             <Box mr={5}>
                                                 <Typography variant="subtitle1" >
-                                                    12:00 às 13:00
-                                    </Typography>
+                                                    {users.lunchstarts} às {users.lunchends}
+                                                </Typography>
                                             </Box>
                                         </Box>
                                     </Box>
@@ -247,84 +260,84 @@ function UserDetails() {
                                     </CardContent>
                                 </Card>
                             </Box>
-                          
+
                             <Box className={classes.wrapBox}>
-                            {cardDetails.map(card => 
-                                <Box mb={2} mr={2}>
-                                
-                                    <Card style={{ height: '150px' }}>
-                                        <CardContent>
-                                            <Box display="flex" >
-                                                <Box  display="flex" flexDirection="column" justifyContent="center">
-                                                    <Typography variant="h4" >
-                                                        {card.day}
-                                    </Typography>
-                                                    <Typography variant="h5" >
-                                                        {card.month}
+                                {cardDetails.map(card =>
+                                    <Box mb={2} mr={2}>
+
+                                        <Card style={{ height: '150px' }}>
+                                            <CardContent>
+                                                <Box display="flex" >
+                                                    <Box display="flex" flexDirection="column" justifyContent="center">
+                                                        <Typography variant="h4" >
+                                                            {card.day}
+                                                        </Typography>
+                                                        <Typography variant="h5" >
+                                                            {card.month}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box ml={2} display="grid" className={classes.gridCard}>
+                                                        <Box mr={8} mb={1}>
+                                                            <Typography style={{ color: "#1976d2" }} variant="subtitle2"  >
+                                                                Expediente
                                                 </Typography>
+                                                        </Box>
+                                                        <Box>
+                                                            <Typography style={{ color: "#1976d2" }} variant="subtitle2" >
+                                                                Almoço
+                                                </Typography>
+                                                        </Box>
+                                                        <Box display="flex" flexDirection="column">
+                                                            <Typography variant="subtitle2" >
+                                                                Entrou
+                                                </Typography>
+                                                            <Typography style={{ color: "#4F4F4F" }} variant="subtitle2" >
+                                                                {card.workStarts}
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box display="flex" flexDirection="column">
+                                                            <Typography variant="subtitle2" >
+                                                                Entrou
+                                                </Typography>
+                                                            <Typography style={{ color: "#4F4F4F" }} variant="subtitle2" >
+                                                                {card.lunchStarts}
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box mt={1} display="flex" flexDirection="column">
+                                                            <Typography variant="subtitle2" >
+                                                                Saiu
+                                                </Typography>
+                                                            <Typography style={{ color: "#4F4F4F" }} variant="subtitle2" >
+                                                                {card.workEnds}
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box mt={1} display="flex" flexDirection="column">
+                                                            <Typography variant="subtitle2" >
+                                                                Saiu
+                                                </Typography>
+                                                            <Typography style={{ color: "#4F4F4F" }} variant="subtitle2" >
+                                                                {card.lunchEnds}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
                                                 </Box>
-                                                <Box ml={2} display="grid" className={classes.gridCard}>
-                                                    <Box mr={8} mb={1}>
-                                                        <Typography style={{ color: "#1976d2" }} variant="subtitle2"  >
-                                                            Expediente
-                                                </Typography>
-                                                    </Box>
-                                                    <Box>
-                                                        <Typography style={{ color: "#1976d2" }} variant="subtitle2" >
-                                                            Almoço
-                                                </Typography>
-                                                    </Box>
-                                                    <Box display="flex" flexDirection="column">
-                                                        <Typography  variant="subtitle2" >
-                                                            Entrou
-                                                </Typography>
-                                                        <Typography style={{color: "#4F4F4F"}} variant="subtitle2" >
-                                                            {card.workStarts}
-                                                </Typography>
-                                                    </Box>
-                                                    <Box display="flex" flexDirection="column">
-                                                        <Typography variant="subtitle2" >
-                                                            Entrou
-                                                </Typography>
-                                                        <Typography style={{color: "#4F4F4F"}} variant="subtitle2" >
-                                                        {card.lunchStarts}
-                                                </Typography>
-                                                    </Box>
-                                                    <Box mt={1} display="flex" flexDirection="column">
-                                                        <Typography variant="subtitle2" >
-                                                            Saiu
-                                                </Typography>
-                                                        <Typography style={{color: "#4F4F4F"}} variant="subtitle2" >
-                                                        {card.workEnds}
-                                                </Typography>
-                                                    </Box>
-                                                    <Box  mt={1} display="flex" flexDirection="column">
-                                                        <Typography variant="subtitle2" >
-                                                            Saiu
-                                                </Typography>
-                                                        <Typography style={{color: "#4F4F4F"}} variant="subtitle2" >
-                                                        {card.lunchEnds}
-                                                </Typography>
-                                                    </Box>
-                                                </Box>
-                                            </Box>
-                                        </CardContent>
-                                    </Card> 
-                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Box>
                                 )}
-                                
-                               
+
+
                             </Box>
-                            
+
                         </Box>
                     </Box>
-                  
+
                 </Form>
-            
+
             </Box>
-             
+
         </Container>
-       
+
     )
 }
 ;

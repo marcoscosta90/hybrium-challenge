@@ -4,6 +4,7 @@ import { useParams } from 'react-router'
 import CreateUser from '../../components/CreateUser'
 import Navbar from '../../components/Navbar'
 import Sidebar from '../../components/Sidebar'
+import UserDetails from '../../components/UserDetails'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -22,9 +23,8 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-function Create() {
+function Details() {
     const classes = useStyles();
-    const { id } = useParams();
 
     return (
         <div className={classes.root}>
@@ -36,14 +36,11 @@ function Create() {
                     <Sidebar />
                 </div>
                 <div className={classes.createuser}>
-                    <CreateUser id={id ? Number.parseInt(id, 10) : null} />
+                    <UserDetails />
                 </div>
             </main>
         </div>
 
-
-
     )
 }
-
-export default Create
+    export default Details;
